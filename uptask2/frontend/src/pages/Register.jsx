@@ -1,14 +1,85 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Alert from '../components/Alert';
+import axios from 'axios';
 
 const Register = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [password2, setPassword2] = useState('');
+  const [alert, setAlert] = useState({});
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if ([name, email, password, password2].includes('')) {
+      setAlert({
+        msg: 'All fields are requird',
+        error: true,
+      });
+      return;
+    }
+
+    if (password !== password2) {
+      setAlert({
+        msg: 'Passwords are different',
+        error: true,
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      setAlert({
+        msg: 'Password minimun 6 characters',
+        error: true,
+      });
+      return;
+    }
+
+    setAlert({});
+
+    // Create user in the API
+    try {
+      console.log(name);
+      console.log(email);
+      console.log(password);
+      const { data } = await axios.post(
+        'http://localhost:4000/api/users/createUser',
+        {
+          name,
+          email,
+          password,
+        }
+      );
+      console.log(data.msg);
+      setAlert({
+        msg: data.msg,
+        error: false,
+      });
+    } catch (error) {
+      //Axios documentation to get error is { error.response }
+
+      setAlert({
+        msg: error.response.data.msg,
+        error: true,
+      });
+    }
+  };
+
+  const { msg } = alert;
+
   return (
     <>
       <h1 className="text-sky-600 font-black text-6xl capitalize ">
         Create account and manage your{' '}
         <span className="text-slate-700">projects</span>
       </h1>
-      <form className="my-10 bg-white shadow rounded-lg p-10">
+      {msg && <Alert alert={alert} />}
+      <form
+        className="my-10 bg-white shadow rounded-lg p-10"
+        onSubmit={handleSubmit}
+      >
         <div className="my-5">
           <label
             htmlFor="name"
@@ -21,6 +92,8 @@ const Register = () => {
             type="text"
             placeholder="Name"
             className=" w-full mt-3 p-3 border rounded-xl bg-gray-50"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
         <div className="my-5">
@@ -35,6 +108,8 @@ const Register = () => {
             type="email"
             placeholder="Email"
             className=" w-full mt-3 p-3 border rounded-xl bg-gray-50"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="my-5">
@@ -49,6 +124,8 @@ const Register = () => {
             type="password"
             placeholder="Password"
             className=" w-full mt-3 p-3 border rounded-xl bg-gray-50"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <div className="my-5">
@@ -63,6 +140,8 @@ const Register = () => {
             type="password"
             placeholder="Confirm Password"
             className=" w-full mt-3 p-3 border rounded-xl bg-gray-50"
+            value={password2}
+            onChange={(e) => setPassword2(e.target.value)}
           />
         </div>
 

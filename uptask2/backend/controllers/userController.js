@@ -13,8 +13,10 @@ const createUser = async (req, res) => {
     try {
       const user = new User(req.body);
       user.token = generateID();
-      const savedUser = await user.save();
-      res.json(savedUser);
+      await user.save();
+      res.json({
+        msg: 'User Created succesfully, Check your email for more instructions',
+      });
     } catch (error) {
       console.log(error);
     }
