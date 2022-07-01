@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Alert from '../components/Alert';
 import axios from 'axios';
+import { useEffect } from 'react';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -45,7 +46,7 @@ const Register = () => {
       console.log(email);
       console.log(password);
       const { data } = await axios.post(
-        'http://localhost:4000/api/users/createUser',
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/createUser`,
         {
           name,
           email,
@@ -57,6 +58,11 @@ const Register = () => {
         msg: data.msg,
         error: false,
       });
+
+      setName('');
+      setEmail('');
+      setPassword('');
+      setPassword2('');
     } catch (error) {
       //Axios documentation to get error is { error.response }
 

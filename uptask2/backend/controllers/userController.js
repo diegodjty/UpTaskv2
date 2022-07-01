@@ -1,6 +1,7 @@
 import generateID from '../helpers/generateID.js';
 import generateJWT from '../helpers/generateJWT.js';
 import User from '../models/User.js';
+import { registerEmail } from '../helpers/emails.js';
 
 const createUser = async (req, res) => {
   const { email } = req.body;
@@ -14,6 +15,9 @@ const createUser = async (req, res) => {
       const user = new User(req.body);
       user.token = generateID();
       await user.save();
+
+      // send confirmation email
+      registerEmail({ email: user.email, name: user.name, token: user.token });
       res.json({
         msg: 'User Created succesfully, Check your email for more instructions',
       });
