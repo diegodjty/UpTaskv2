@@ -68,7 +68,7 @@ const confirm = async (req, res) => {
   }
 
   try {
-    confirmUser.confirm = true;
+    confirmUser.confirmed = true;
     confirmUser.token = '';
     await confirmUser.save();
     res.json({ msg: 'user confirmed' });
