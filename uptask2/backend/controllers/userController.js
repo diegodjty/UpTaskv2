@@ -1,7 +1,7 @@
 import generateID from '../helpers/generateID.js';
 import generateJWT from '../helpers/generateJWT.js';
 import User from '../models/User.js';
-import { registerEmail } from '../helpers/emails.js';
+import { registerEmail, forgotPasswordEmail } from '../helpers/emails.js';
 
 const createUser = async (req, res) => {
   const { email } = req.body;
@@ -88,6 +88,11 @@ const forgotPassword = async (req, res) => {
   try {
     user.token = generateID();
     await user.save();
+    forgotPasswordEmail({
+      email: user.email,
+      name: user.name,
+      token: user.token,
+    });
     res.json({ msg: 'Message sent to email' });
   } catch (error) {
     console.log(error);
