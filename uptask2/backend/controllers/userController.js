@@ -107,7 +107,7 @@ const checksPassword = async (req, res) => {
     res.json({ msg: 'Valid token, user exist' });
   } else {
     const error = new Error('Token not valid');
-    return res.status(404).json({ msg: error });
+    return res.status(404).json({ msg: error.message });
   }
 };
 
