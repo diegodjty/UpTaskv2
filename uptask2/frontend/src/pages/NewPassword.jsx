@@ -4,9 +4,41 @@ import axios from 'axios';
 import Alert from '../components/Alert';
 
 const NewPassword = () => {
+  const [password, setPassword] = useState('');
+  const [passwordChanged, setPasswordChanged] = useState(false);
   const [validToken, setValidToken] = useState(false);
   const [alert, setAlert] = useState({});
   const params = useParams();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (password.length < 6) {
+      setAlert({
+        msg: 'Password needs at least 6 charaters',
+        error: true,
+      });
+
+      return;
+    }
+
+    try {
+      const url = `http://localhost:4000/api/users/forgot-password/${params.token}`;
+
+      const { data } = await axios.post(url, { password });
+      setAlert({
+        msg: data.msg,
+        error: false,
+      });
+      setPasswordChanged(true);
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.msg,
+        error: true,
+      });
+    }
+  };
+
   useEffect(() => {
     const testToken = async () => {
       try {
@@ -34,7 +66,10 @@ const NewPassword = () => {
       </h1>
       {msg && <Alert alert={alert} />}
       {validToken && (
-        <form className="my-10 bg-white shadow rounded-lg p-10">
+        <form
+          className="my-10 bg-white shadow rounded-lg p-10"
+          onSubmit={handleSubmit}
+        >
           <div className="my-5">
             <label
               htmlFor="password"
@@ -47,6 +82,8 @@ const NewPassword = () => {
               type="password"
               placeholder="New Password"
               className=" w-full mt-3 p-3 border rounded-xl bg-gray-50"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
@@ -56,6 +93,14 @@ const NewPassword = () => {
             className="bg-sky-700 mb-5 w-full py-3 text-white uppercase cursor-pointer font-bold rounded hover:bg-sky-800 transition-colors "
           />
         </form>
+      )}
+      {passwordChanged && (
+        <Link
+          className="block text-center my-5 text-slate-500 uppercase text-sm"
+          to="/"
+        >
+          Login
+        </Link>
       )}
     </>
   );
