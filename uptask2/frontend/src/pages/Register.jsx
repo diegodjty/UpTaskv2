@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Alert from '../components/Alert';
-import axios from 'axios';
+import axiosClient from '../config/axiosClient';
 import { useEffect } from 'react';
 
 const Register = () => {
@@ -42,18 +42,11 @@ const Register = () => {
 
     // Create user in the API
     try {
-      console.log(name);
-      console.log(email);
-      console.log(password);
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/users/createUser`,
-        {
-          name,
-          email,
-          password,
-        }
-      );
-      console.log(data.msg);
+      const { data } = await axiosClient.post('/users/createUser', {
+        name,
+        email,
+        password,
+      });
       setAlert({
         msg: data.msg,
         error: false,

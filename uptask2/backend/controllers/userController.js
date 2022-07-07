@@ -55,7 +55,6 @@ const authenticate = async (req, res) => {
     const error = new Error('Password is wrong');
     return res.status(400).json({ msg: error.message });
   }
-  res.send('login');
 };
 
 const confirm = async (req, res) => {
