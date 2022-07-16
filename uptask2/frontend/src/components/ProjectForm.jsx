@@ -1,5 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
+import useProjects from '../hooks/useProjects';
+import Alert from '../components/Alert';
 
 const ProjectForm = () => {
   const [name, setName] = useState('');
@@ -7,8 +9,33 @@ const ProjectForm = () => {
   const [client, setClient] = useState('');
   const [dueDate, setDueDate] = useState('');
 
+  const { showAlert, alert, submitProject } = useProjects();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if ([name, desc, client, dueDate].includes('')) {
+      showAlert({
+        msg: 'All fields are required',
+        erro: true,
+      });
+      return;
+    }
+    await submitProject({name,desc,dueDate,client})
+    setName('')
+    setDesc('')
+    setClient('')
+    setDueDate('')
+  };
+
+  const { msg } = alert;
+
   return (
-    <form className="bg-white py-10 px-5 md:w-1/2 rounded-lg shadow">
+    <form
+      className="bg-white py-10 px-5 md:w-1/2 rounded-lg shadow"
+      onSubmit={handleSubmit}
+    >
+      {msg && <Alert alert={alert}/>}
       <div className="mb-5">
         <label
           htmlFor="name"
