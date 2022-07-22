@@ -48,7 +48,6 @@ const editProject = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-  res.json({ project });
 };
 
 const deleteProject = async (req, res) => {

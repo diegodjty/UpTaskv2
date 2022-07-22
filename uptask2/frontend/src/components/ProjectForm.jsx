@@ -1,41 +1,56 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import useProjects from '../hooks/useProjects';
 import Alert from '../components/Alert';
 
 const ProjectForm = () => {
+  const [id, setId] = useState(null);
   const [name, setName] = useState('');
-  const [desc, setDesc] = useState('');
+  const [description, setDesc] = useState('');
   const [client, setClient] = useState('');
   const [dueDate, setDueDate] = useState('');
 
-  const { showAlert, alert, submitProject } = useProjects();
+  const params = useParams();
+
+  const { showAlert, alert, submitProject, project } = useProjects();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if ([name, desc, client, dueDate].includes('')) {
+    if ([name, description, client, dueDate].includes('')) {
       showAlert({
         msg: 'All fields are required',
         erro: true,
       });
       return;
     }
-    await submitProject({name,desc,dueDate,client})
-    setName('')
-    setDesc('')
-    setClient('')
-    setDueDate('')
+    await submitProject({ id, name, description, dueDate, client });
+    setId(null);
+    setName('');
+    setDesc('');
+    setClient('');
+    setDueDate('');
   };
 
   const { msg } = alert;
+
+  useEffect(() => {
+    if (params.id) {
+      setId(project._id);
+      setName(project.name);
+      setDesc(project.description);
+      setDueDate(project.dueDate?.split('T')[0]);
+      setClient(project.client);
+    }
+  }, [params]);
 
   return (
     <form
       className="bg-white py-10 px-5 md:w-1/2 rounded-lg shadow"
       onSubmit={handleSubmit}
     >
-      {msg && <Alert alert={alert}/>}
+      {msg && <Alert alert={alert} />}
       <div className="mb-5">
         <label
           htmlFor="name"
@@ -64,7 +79,7 @@ const ProjectForm = () => {
           className="border w-full p-2 mt-2 placeholder-gray-400 rounded-md"
           id="desc"
           placeholder="Project Description"
-          value={desc}
+          value={description}
           onChange={(e) => setDesc(e.target.value)}
         />
       </div>
@@ -101,7 +116,7 @@ const ProjectForm = () => {
       </div>
       <input
         type="submit"
-        value={'Create Project'}
+        value={id ? 'Update Project' : 'Create Project'}
         className="bg-sky-600 w-full p-3 uppercase font-bold text-white cursor-pointer hover:bg-sky-700 transition-colors"
       />
     </form>
