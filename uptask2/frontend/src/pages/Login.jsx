@@ -8,6 +8,10 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [alert, setAlert] = useState({});
   const { setAuth } = useAuth();
+
+  const navigate = useNavigate()
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -29,6 +33,8 @@ const Login = () => {
       setAuth(data);
       setEmail('');
       setPassword('');
+      navigate('/projects')
+
     } catch (error) {
       console.log(error);
       setAlert({
