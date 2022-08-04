@@ -9,6 +9,7 @@ const ProjectsProvider = ({ children }) => {
   const [project, setProject] = useState({});
   const [alert, setAlert] = useState({});
   const [loading, setLoading] = useState(false);
+  const [FormTaskmodal, setFormTaskmodal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -164,6 +165,9 @@ const ProjectsProvider = ({ children }) => {
     }
   };
 
+  const handleTaskModal = () => {
+    setFormTaskmodal(!FormTaskmodal);
+  };
   return (
     <ProjectsContext.Provider
       value={{
@@ -175,6 +179,8 @@ const ProjectsProvider = ({ children }) => {
         project,
         loading,
         deleteProject,
+        FormTaskmodal,
+        handleTaskModal,
       }}
     >
       {children}
