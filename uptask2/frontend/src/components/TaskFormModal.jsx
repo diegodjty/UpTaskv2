@@ -1,16 +1,34 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import useProjects from '../hooks/useProjects';
+import Alert from '../components/Alert';
+import { useParams } from 'react-router-dom';
 
 const PRIORITY = ['Low', 'Medium', 'High'];
 
 const TaskFormModal = () => {
-  const { handleTaskModal, FormTaskmodal } = useProjects();
+  const { handleTaskModal, FormTaskmodal, showAlert, alert, submitTask } =
+    useProjects();
 
   const [name, setName] = useState('');
-  const [desc, setDesc] = useState('');
+  const [description, setDesc] = useState('');
   const [priority, setPriority] = useState('');
+  const [dueDate, setDueDate] = useState('');
 
+  const params = useParams();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if ([name, description, priority, dueDate].includes('')) {
+      showAlert({
+        msg: ' All Fields are required',
+        error: true,
+      });
+    }
+    submitTask({ name, description, priority, dueDate, project: params.id });
+  };
+
+  const { msg } = alert;
   return (
     <Transition.Root show={FormTaskmodal} as={Fragment}>
       <Dialog
@@ -79,7 +97,8 @@ const TaskFormModal = () => {
                   >
                     Create Task
                   </Dialog.Title>
-                  <form className="my-10">
+                  {msg && <Alert alert={alert} />}
+                  <form className="my-10" onSubmit={handleSubmit}>
                     <div className="mb-5">
                       <label
                         htmlFor="name"
@@ -98,18 +117,33 @@ const TaskFormModal = () => {
                     </div>
                     <div className="mb-5">
                       <label
-                        htmlFor="desc"
+                        htmlFor="description"
                         className="text-gray-700 uppercase font-bold text-sm"
                       >
                         Task Description
                       </label>
                       <textarea
                         type="text"
-                        id="desc"
+                        id="description"
                         placeholder="Task Description"
                         className="border-2 w-full p-2 mt-2 placeholder:gray-400 rounded-md"
-                        value={name}
+                        value={description}
                         onChange={(e) => setDesc(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-5">
+                      <label
+                        htmlFor="dueDate"
+                        className="text-gray-700 uppercase font-bold text-sm"
+                      >
+                        Due Date
+                      </label>
+                      <input
+                        type="date"
+                        id="dueDate"
+                        className="border-2 w-full p-2 mt-2 placeholder:gray-400 rounded-md"
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
                       />
                     </div>
                     <div className="mb-5">
@@ -120,7 +154,7 @@ const TaskFormModal = () => {
                         Priority
                       </label>
                       <select
-                        id="desc"
+                        id="priority"
                         className="border-2 w-full p-2 mt-2 placeholder:gray-400 rounded-md"
                         value={priority}
                         onChange={(e) => setPriority(e.target.value)}
