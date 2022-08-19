@@ -16,7 +16,7 @@ const TaskFormModal = () => {
   const [dueDate, setDueDate] = useState('');
 
   const params = useParams();
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if ([name, description, priority, dueDate].includes('')) {
@@ -25,7 +25,18 @@ const TaskFormModal = () => {
         error: true,
       });
     }
-    submitTask({ name, description, priority, dueDate, project: params.id });
+    await submitTask({
+      name,
+      description,
+      priority,
+      dueDate,
+      project: params.id,
+    });
+
+    setName('');
+    setDesc('');
+    setDueDate('');
+    setPriority('');
   };
 
   const { msg } = alert;

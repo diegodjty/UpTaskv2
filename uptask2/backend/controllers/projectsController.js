@@ -3,7 +3,7 @@ import Projects from '../models/Projects.js';
 import Task from '../models/Task.js';
 
 const getProjects = async (req, res) => {
-  const projects = await Projects.find().where('creator').equals(req.user);
+  const projects = await Projects.find().where('creator').equals(req.user).select('-tasks');
 
   res.json(projects);
 };
@@ -23,7 +23,7 @@ const newProject = async (req, res) => {
 const getProject = async (req, res) => {
   const { id } = req.params;
 
-  const project = await Projects.findById(id);
+  const project = await Projects.findById(id).populate('tasks');
 
   verifyOwner(project, req, res);
 

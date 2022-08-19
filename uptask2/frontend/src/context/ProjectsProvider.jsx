@@ -182,6 +182,13 @@ const ProjectsProvider = ({ children }) => {
       };
       const { data } = await axiosClient.post('/tasks', task, config);
       console.log(data);
+
+      // Add Task to state
+      const updatedProject = { ...project };
+      updatedProject.tasks = [...project.tasks, data];
+      setProject(updatedProject);
+      setAlert({});
+      setFormTaskmodal(false);
     } catch (error) {
       console.log(error);
     }
