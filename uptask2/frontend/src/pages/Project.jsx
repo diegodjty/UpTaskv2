@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import useProjects from '../hooks/useProjects';
 import TaskFormModal from '../components/TaskFormModal';
 import Task from '../components/Task';
 
-
 const Project = () => {
   const params = useParams();
   const { getProject, project, loading, handleTaskModal } = useProjects();
-  const [modal, setModal] = useState(false);
 
   useEffect(() => {
     getProject(params.id);
@@ -65,14 +63,13 @@ const Project = () => {
       </button>
       <p className="font-bold text-xl mt-10">Project Tasks</p>
       <div className="bg-white shadow mt-10 rounded-lg ">
-        {project.tasks?.length ? 
-        project.tasks?.map(task=>(
-          <Task key={task._id} task={task}  />
-        )) : (
+        {project.tasks?.length ? (
+          project.tasks?.map((task) => <Task key={task._id} task={task} />)
+        ) : (
           <p className="text-center my-5 p-10">No Tasks in this Project</p>
         )}
       </div>
-      <TaskFormModal modal={modal} setModal={setModal} />
+      <TaskFormModal />
     </>
   );
 };

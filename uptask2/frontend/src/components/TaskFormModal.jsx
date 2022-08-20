@@ -7,15 +7,33 @@ import { useParams } from 'react-router-dom';
 const PRIORITY = ['Low', 'Medium', 'High'];
 
 const TaskFormModal = () => {
-  const { handleTaskModal, FormTaskmodal, showAlert, alert, submitTask } =
+  const { handleTaskModal, FormTaskmodal, showAlert, alert, submitTask, task } =
     useProjects();
 
+  const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [description, setDesc] = useState('');
   const [priority, setPriority] = useState('');
   const [dueDate, setDueDate] = useState('');
 
   const params = useParams();
+
+  useEffect(() => {
+    if (task?._id) {
+      setId(task._id);
+      setName(task.name);
+      setDesc(task.description);
+      setDueDate(task.dueDate?.split('T')[0]);
+      setPriority(task.priority);
+      return;
+    }
+    setId('');
+    setName('');
+    setDesc('');
+    setDueDate('');
+    setPriority('');
+  }, [task]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -26,13 +44,14 @@ const TaskFormModal = () => {
       });
     }
     await submitTask({
+      id,
       name,
       description,
       priority,
       dueDate,
       project: params.id,
     });
-
+    setId('');
     setName('');
     setDesc('');
     setDueDate('');
@@ -106,7 +125,7 @@ const TaskFormModal = () => {
                     as="h3"
                     className="text-lg leading-6 font-bold text-gray-900"
                   >
-                    Create Task
+                    {id ? 'Edit Task' : 'Create Task'}
                   </Dialog.Title>
                   {msg && <Alert alert={alert} />}
                   <form className="my-10" onSubmit={handleSubmit}>
@@ -179,7 +198,7 @@ const TaskFormModal = () => {
                     <input
                       type="submit"
                       className="bg-sky-600 hover:bg-sky-600 w-full text-white p-3 uppercase font-bold cursor-pointer transition-colors rounded"
-                      value={'Create Task'}
+                      value={id ? 'Save Changes' : 'Create Task'}
                     />
                   </form>
                 </div>

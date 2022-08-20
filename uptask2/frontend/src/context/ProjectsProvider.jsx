@@ -10,6 +10,7 @@ const ProjectsProvider = ({ children }) => {
   const [alert, setAlert] = useState({});
   const [loading, setLoading] = useState(false);
   const [FormTaskmodal, setFormTaskmodal] = useState(false);
+  const [task, setTask] = useState({});
 
   const navigate = useNavigate();
 
@@ -166,10 +167,19 @@ const ProjectsProvider = ({ children }) => {
   };
 
   const handleTaskModal = () => {
+    setTask({});
     setFormTaskmodal(!FormTaskmodal);
   };
 
   const submitTask = async (task) => {
+    if (task?.id) {
+      editTask(task);
+    } else {
+      await createTask();
+    }
+  };
+
+  const createTask = async (task) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
@@ -193,6 +203,38 @@ const ProjectsProvider = ({ children }) => {
       console.log(error);
     }
   };
+
+  const editTask = async (task) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await axiosClient.put(`/tasks/${task.id}`, task, config);
+
+      //Update state so component rerender
+      const updatedProject = { ...project };
+      updatedProject.tasks = updatedProject.tasks.map((taskState) =>
+        taskState._id === data._id ? data : taskState
+      );
+      setProject(updatedProject);
+      setAlert({});
+      setFormTaskmodal(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEditTaskModal = (task) => {
+    setTask(task);
+    setFormTaskmodal(true);
+  };
+
   return (
     <ProjectsContext.Provider
       value={{
@@ -207,6 +249,8 @@ const ProjectsProvider = ({ children }) => {
         FormTaskmodal,
         handleTaskModal,
         submitTask,
+        handleEditTaskModal,
+        task,
       }}
     >
       {children}
