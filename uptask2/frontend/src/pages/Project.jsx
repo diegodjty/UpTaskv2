@@ -2,11 +2,14 @@ import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import useProjects from '../hooks/useProjects';
 import TaskFormModal from '../components/TaskFormModal';
+import DeleteTaskModal from '../components/DeleteTaskModal';
 import Task from '../components/Task';
+import Alert from '../components/Alert';
 
 const Project = () => {
   const params = useParams();
-  const { getProject, project, loading, handleTaskModal } = useProjects();
+  const { getProject, project, loading, handleTaskModal, alert } =
+    useProjects();
 
   useEffect(() => {
     getProject(params.id);
@@ -15,6 +18,8 @@ const Project = () => {
   const { name } = project;
 
   if (loading) return 'Loading...';
+
+  const { msg } = alert;
   return (
     <>
       <div className="flex justify-between">
@@ -62,6 +67,11 @@ const Project = () => {
         New Task
       </button>
       <p className="font-bold text-xl mt-10">Project Tasks</p>
+      <div className="flex justify-center">
+        <div className="w-full md:w-1/3 lg:w-1/4 ">
+          {msg && <Alert alert={alert} />}
+        </div>
+      </div>
       <div className="bg-white shadow mt-10 rounded-lg ">
         {project.tasks?.length ? (
           project.tasks?.map((task) => <Task key={task._id} task={task} />)
@@ -70,6 +80,7 @@ const Project = () => {
         )}
       </div>
       <TaskFormModal />
+      <DeleteTaskModal />
     </>
   );
 };
