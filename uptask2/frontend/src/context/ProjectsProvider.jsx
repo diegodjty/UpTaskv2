@@ -14,6 +14,7 @@ const ProjectsProvider = ({ children }) => {
   const [task, setTask] = useState({});
   const [collaborator, setCollaborator] = useState({});
   const [deleteCollaboratorModal, setDeleteCollaboratorModal] = useState(false);
+  const [search, setSearch] = useState(false);
 
   const navigate = useNavigate();
 
@@ -182,6 +183,10 @@ const ProjectsProvider = ({ children }) => {
     setTask({});
     setFormTaskmodal(!FormTaskmodal);
   };
+
+  const handleSearch = () => {
+    setSearch(!search);
+  }
 
   const submitTask = async (task) => {
     if (task?.id) {
@@ -444,6 +449,8 @@ const ProjectsProvider = ({ children }) => {
         deleteCollaboratorModal,
         deleteCollaborator,
         changeTaskStatus,
+        handleSearch,
+        search,
       }}
     >
       {children}
