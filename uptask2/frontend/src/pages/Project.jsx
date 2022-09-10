@@ -31,6 +31,7 @@ const Project = () => {
   if (loading) return 'Loading...';
 
   const { msg } = alert;
+
   return (
     <>
       <div className="flex justify-between">
@@ -82,9 +83,7 @@ const Project = () => {
         </button>
       )}
       <p className="font-bold text-xl mt-10">Project Tasks</p>
-      <div className="flex justify-center">
-        
-      </div>
+      <div className="flex justify-center"></div>
       <div className="bg-white shadow mt-10 rounded-lg ">
         {project.tasks?.length ? (
           project.tasks?.map((task) => <Task key={task._id} task={task} />)

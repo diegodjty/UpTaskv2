@@ -118,8 +118,12 @@ const changeStatus = async (req, res) => {
   }
 
   task.status = !task.status;
+  task.completed = req.user._id;
   await task.save();
-  res.json(task);
+  const savedTask = await Task.findById(id)
+    .populate('project')
+    .populate('completed');
+  res.json(savedTask);
 };
 
 export { addTask, getTask, updateTask, deleteTask, changeStatus };
