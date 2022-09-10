@@ -1,9 +1,12 @@
 import verifyOwner from '../helpers/verifyOwner.js';
 import Projects from '../models/Projects.js';
 import Task from '../models/Task.js';
+import User from '../models/User.js';
 
 const getProjects = async (req, res) => {
-  const projects = await Projects.find().where('creator').equals(req.user).select('-tasks');
+  const projects = await Projects.find({
+    $or: [{ collaborators: { $in: req.user } }, { creator: { $in: req.user } }],
+  }).select('-tasks');
 
   res.json(projects);
 };
@@ -23,7 +26,9 @@ const newProject = async (req, res) => {
 const getProject = async (req, res) => {
   const { id } = req.params;
 
-  const project = await Projects.findById(id).populate('tasks');
+  const project = await Projects.findById(id)
+    .populate('tasks')
+    .populate('collaborators', 'name email ');
 
   verifyOwner(project, req, res);
 
@@ -64,9 +69,74 @@ const deleteProject = async (req, res) => {
   }
 };
 
-const addCollaborator = async (req, res) => {};
+const addCollaborator = async (req, res) => {
+  const project = await Projects.findById(req.params.id);
 
-const deleteCollaborator = async (req, res) => {};
+  if (!project) {
+    const error = new Error('Project not found');
+    return res.status(404).json({ msg: error.message });
+  }
+  console.log(project.creator.toString(), '---', req.user._id.toString());
+  if (project.creator.toString() !== req.user._id.toString()) {
+    const error = new Error('Not Valid Action');
+    return res.status(404).json({ msg: error.message });
+  }
+  const { email } = req.body;
+
+  const user = await User.findOne({ email }).select(
+    '-confirmed -createdAt -password -token -updatedAt -__v '
+  );
+
+  if (!user) {
+    const error = new Error('User not found');
+    return res.status(404).json({ msg: error.message });
+  }
+
+  if (project.creator.toString() === user._id.toString()) {
+    const error = new Error('Project Creator Cant be a Collaborator');
+    return res.status(404).json({ msg: error.message });
+  }
+
+  if (project.collaborators.includes(user._id)) {
+    const error = new Error('User is already part of the project');
+    return res.status(404).json({ msg: error.message });
+  }
+
+  project.collaborators.push(user._id);
+  await project.save();
+  res.json({ msg: 'Colaborator added succesfully' });
+};
+
+const deleteCollaborator = async (req, res) => {
+  const project = await Projects.findById(req.params.id);
+
+  if (!project) {
+    const error = new Error('Project not found');
+    return res.status(404).json({ msg: error.message });
+  }
+  if (project.creator.toString() !== req.user._id.toString()) {
+    const error = new Error('Not Valid Action');
+    return res.status(404).json({ msg: error.message });
+  }
+
+  project.collaborators.pull(req.body.id);
+  await project.save();
+  res.json({ msg: 'Colaborator Deleted Succesfully' });
+};
+
+const searchCollaborator = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email }).select(
+    '-confirmed -createdAt -password -token -updatedAt -__v '
+  );
+
+  if (!user) {
+    const error = new Error('User not found');
+    return res.status(404).json({ msg: error.message });
+  }
+  res.json(user);
+};
 
 const getTasks = async (req, res) => {
   const { id } = req.params;
@@ -91,4 +161,5 @@ export {
   addCollaborator,
   deleteCollaborator,
   getTasks,
+  searchCollaborator,
 };

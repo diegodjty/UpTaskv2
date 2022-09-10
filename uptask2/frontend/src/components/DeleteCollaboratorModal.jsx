@@ -2,15 +2,15 @@ import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import useProjects from '../hooks/useProjects';
 
-const DeleteTaskModal = () => {
-  const { handleDeleteTaskModal, deleteTaskModal, deleteTask } = useProjects();
+const DeleteCollaboratorModal = () => {
+  const { handleDeleteCollaborator, deleteCollaboratorModal,deleteCollaborator } = useProjects();
 
   return (
-    <Transition.Root show={deleteTaskModal} as={Fragment}>
+    <Transition.Root show={deleteCollaboratorModal} as={Fragment}>
       <Dialog
         as="div"
         className="fixed z-10 inset-0 overflow-y-auto"
-        onClose={handleDeleteTaskModal}
+        onClose={handleDeleteCollaborator}
       >
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
@@ -47,7 +47,7 @@ const DeleteTaskModal = () => {
                 <button
                   type="button"
                   className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  onClick={handleDeleteTaskModal}
+                  onClick={handleDeleteCollaborator}
                 >
                   <span className="sr-only">Cerrar</span>
                   <svg
@@ -85,11 +85,12 @@ const DeleteTaskModal = () => {
                     as="h3"
                     className="text-lg leading-6 font-bold text-gray-900"
                   >
-                    Delete Task
+                    Delete Collaborator
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500 ">
-                      A delete task can't be recovered
+                      Collaborator won't have accesss to the project if is
+                      deleted
                     </p>
                   </div>
                 </div>
@@ -98,14 +99,14 @@ const DeleteTaskModal = () => {
                 <button
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  onClick={deleteTask}
+                    onClick={deleteCollaborator}
                 >
                   Delete
                 </button>
                 <button
                   type="button"
                   className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                  onClick={handleDeleteTaskModal}
+                  onClick={handleDeleteCollaborator}
                 >
                   {' '}
                   Cancel
@@ -119,4 +120,4 @@ const DeleteTaskModal = () => {
   );
 };
 
-export default DeleteTaskModal;
+export default DeleteCollaboratorModal;

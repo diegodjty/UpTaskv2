@@ -17,8 +17,8 @@ const addTask = async (req, res) => {
 
   try {
     const savedTask = await Task.create(req.body);
-    projectExist.tasks.push(savedTask._id)
-    await projectExist.save(); 
+    projectExist.tasks.push(savedTask._id);
+    await projectExist.save();
     return res.json(savedTask);
   } catch (error) {
     console.log(error);
@@ -72,7 +72,7 @@ const updateTask = async (req, res) => {
 const deleteTask = async (req, res) => {
   const { id } = req.params;
 
-  const task = await Task.findById(id);
+  const task = await Task.findById(id).populate('project');
 
   if (!task) {
     const error = new Error('Task not found');
@@ -87,12 +87,39 @@ const deleteTask = async (req, res) => {
   }
 
   try {
-    await task.deleteOne();
+    const project = await Project.findById(task.project);
+
+    project.tasks.pull(task._id);
+
+    await Promise.allSettled([await project.save(), await task.deleteOne()]);
     res.json({ msg: 'Task Deleted' });
   } catch (error) {
     console.log(error);
   }
 };
-const changeStatus = async (req, res) => {};
+const changeStatus = async (req, res) => {
+  const { id } = req.params;
+
+  const task = await Task.findById(id).populate('project');
+
+  if (!task) {
+    const error = new Error('Task not found');
+    return res.status(404).json({ msg: error.message });
+  }
+
+  if (
+    task.project.creator.toString() !== req.user._id.toString() &&
+    !task.project.collaborators.some(
+      (collaborator) => collaborator._id.toString() === req.user._id.toString()
+    )
+  ) {
+    const error = new Error('Not Valid Action');
+    return res.status(403).json({ msg: error.message });
+  }
+
+  task.status = !task.status;
+  await task.save();
+  res.json(task);
+};
 
 export { addTask, getTask, updateTask, deleteTask, changeStatus };

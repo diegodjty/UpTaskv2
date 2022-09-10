@@ -1,8 +1,12 @@
 import { formatDate } from '../helpers/formatDate';
+import useAdmin from '../hooks/useAdmin';
 import useProjects from '../hooks/useProjects';
+
 const Task = ({ task }) => {
-  const { handleEditTaskModal, handleDeleteTaskModal } = useProjects();
+  const { handleEditTaskModal, handleDeleteTaskModal, changeTaskStatus } =
+    useProjects();
   const { name, priority, dueDate, _id, description, status } = task;
+  const admin = useAdmin();
   return (
     <div className="border-b p-5 flex justify-between items-center">
       <div>
@@ -12,27 +16,32 @@ const Task = ({ task }) => {
         <p className="text-xl text-gray-600 mb-1">Priority: {priority}</p>
       </div>
       <div className="flex gap-2">
-        <button
-          className="bg-indigo-600 text-sm uppercase text-white px-4 py-3 rounded-lg"
-          onClick={() => handleEditTaskModal(task)}
-        >
-          Edit
-        </button>
-        {status ? (
-          <button className="bg-sky-600 text-sm uppercase text-white px-4 py-3 rounded-lg">
-            Complete
-          </button>
-        ) : (
-          <button className="bg-gray-600 text-sm uppercase text-white px-4 py-3 rounded-lg">
-            Incomplete
+        {admin && (
+          <button
+            className="bg-indigo-600 text-sm uppercase text-white px-4 py-3 rounded-lg"
+            onClick={() => handleEditTaskModal(task)}
+          >
+            Edit
           </button>
         )}
+
         <button
-          className="bg-red-600 text-sm uppercase text-white px-4 py-3 rounded-lg"
-          onClick={()=>handleDeleteTaskModal(task)}
+          onClick={() => changeTaskStatus(_id)}
+          className={`${
+            status ? 'bg-sky-600' : 'bg-gray-600'
+          } text-sm uppercase text-white px-4 py-3 rounded-lg`}
         >
-          Delete
+          {status ? 'Complete' : 'Incomplete'}
         </button>
+
+        {admin && (
+          <button
+            className="bg-red-600 text-sm uppercase text-white px-4 py-3 rounded-lg"
+            onClick={() => handleDeleteTaskModal(task)}
+          >
+            Delete
+          </button>
+        )}
       </div>
     </div>
   );
