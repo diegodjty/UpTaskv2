@@ -16,7 +16,7 @@ const Task = ({ task }) => {
         <p className="text-xl text-gray-600 mb-1">Priority: {priority}</p>
         {status && (
           <p className="text-xs bg-green-600 uppercase p-1 rounded-lg text-white">
-            Completed By :{task.completed.name}
+            Completed By :{task.completed?.name}
           </p>
         )}
       </div>

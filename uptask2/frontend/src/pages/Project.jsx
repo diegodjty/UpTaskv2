@@ -8,6 +8,9 @@ import DeleteCollaboratorModal from '../components/DeleteCollaboratorModal';
 import Task from '../components/Task';
 import Alert from '../components/Alert';
 import Collaborators from '../components/Collaborators';
+import io from 'socket.io-client';
+
+let socket;
 
 const Project = () => {
   const params = useParams();
@@ -18,6 +21,10 @@ const Project = () => {
     handleTaskModal,
     alert,
     collaborators,
+    submitTaskIO,
+    deleteTaskIO,
+    updateTaskIO,
+    changeStatusIO,
   } = useProjects();
 
   const admin = useAdmin();
@@ -25,6 +32,40 @@ const Project = () => {
   useEffect(() => {
     getProject(params.id);
   }, []);
+
+  useEffect(() => {
+    socket = io(import.meta.env.VITE_BACKEND_URL);
+    socket.emit('open project', params.id);
+  }, []);
+
+  useEffect(() => {
+    socket.on('added task', (task) => {
+      if (task.project === project._id) {
+        submitTaskIO(task);
+      }
+    });
+
+    socket.on('deleted task', (task) => {
+      if (task.project === project._id) {
+        deleteTaskIO(task);
+      }
+    });
+
+    socket.on('updated task', (task) => {
+      if (task.project === project._id) {
+        console.log('updated task');
+        updateTaskIO(task);
+      }
+    });
+
+    socket.on('changed status', (task) => {
+      console.log(task);
+      if (task.project._id === project._id) {
+        console.log('this runs');
+        changeStatusIO(task);
+      }
+    });
+  });
 
   const { name } = project;
 
